@@ -1,0 +1,36 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: #292929;
+}
+
+.back {
+  margin: 8px;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  margin: 8px 16px;
+}
+
+.switch {
+  margin-right: 6px;
+}
+
+.canvasWrapper {
+  flex: 1 1 auto;
+  height: 0;
+}
