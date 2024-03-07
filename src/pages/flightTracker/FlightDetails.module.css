@@ -1,0 +1,63 @@
+.gridContainer {
+  display: grid;
+  gap: 0;
+}
+
+.gridCell {
+  padding: 10px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.5);
+  border-width: 0px;
+}
+
+.flightNumberCell {
+  grid-column: 1 / span 2;
+  border-bottom-width: 1px;
+}
+
+.tailNumberCell {
+  grid-column: 1 / span 2;
+  border-bottom-width: 1px;
+}
+
+.aircraftCell {
+  grid-column: 1 / span 2;
+  border-bottom-width: 1px;
+}
+
+.latitudeCell {
+  grid-column: 1;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+.longitudeCell {
+  grid-column: 2;
+  border-bottom-width: 1px;
+}
+
+.headingCell {
+  grid-column: 1 / span 2;
+  border-bottom-width: 1px;
+}
+
+.altitudeCell {
+  grid-column: 1 / span 2;
+  border-bottom-width: 1px;
+}
+
+.speedCell {
+  grid-column: 1 / span 2;
+  border-bottom-width: 1px;
+}
+
+.originCell {
+  grid-column: 1;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+.destinationCell {
+  grid-column: 2;
+  border-bottom-width: 1px;
+}
