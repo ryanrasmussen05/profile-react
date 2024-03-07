@@ -1,0 +1,48 @@
+.header {
+  text-align: center;
+  margin-top: 24px;
+  font-weight: 300;
+  font-size: 36px;
+  font-family: monospace;
+}
+
+.description {
+  max-width: 600px;
+  margin: 34px auto;
+  padding: 0 16px;
+}
+
+.jsonViewer {
+  max-width: 600px;
+  padding: 12px;
+  border: 1px solid white;
+  border-radius: 6px;
+  background-color: #1e1e1e;
+  margin-left: auto;
+  margin-right:auto;
+}
+
+.projects {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 16px;
+}
+
+.projects h2 {
+  margin-bottom: 0;
+}
+
+.projects ul {
+  margin-top: 0;
+  list-style: square;
+}
+
+.projects li {
+  margin: 10px 0;
+}
+
+.projects a {
+  font-family: monospace;
+  font-size: 16px;
+}
