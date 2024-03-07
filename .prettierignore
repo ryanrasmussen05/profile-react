@@ -1,0 +1,6 @@
+package.json
+
+# do not run prettier on generated files
+dist/
+build/
+public
