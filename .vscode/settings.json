@@ -1,0 +1,5 @@
+{
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "eslint.options": {},
+  "eslint.workingDirectories": []
+}
