@@ -27,6 +27,11 @@ function FlightTrackerPage() {
     setIsDrawerOpen(true);
   };
 
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+    setSelectedFlight(null);
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.backButton}>
@@ -39,7 +44,7 @@ function FlightTrackerPage() {
         className="foo"
         styles={{ body: { padding: 0 } }}
         open={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
+        onClose={handleDrawerClose}
       >
         <FlightDetails flight={selectedFlight} />
       </Drawer>
@@ -53,6 +58,7 @@ function FlightTrackerPage() {
             key={index}
             flight={flight}
             onClick={handleFlightClick}
+            selected={selectedFlight === flight}
             lat={flight.latitude}
             lng={flight.longitude}
           />

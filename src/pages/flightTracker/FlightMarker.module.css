@@ -1,4 +1,5 @@
 .button {
+  display: flex;
   background-color: transparent;
   border: none;
   margin: 0;
@@ -8,4 +9,8 @@
   border-radius: 0;
   appearance: none;
   cursor: pointer;
+}
+
+.selected {
+  box-shadow: 0px 0px 0px 3px blue;
 }

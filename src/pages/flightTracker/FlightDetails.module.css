@@ -61,3 +61,19 @@
   grid-column: 2;
   border-bottom-width: 1px;
 }
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.detailsText{
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.detailsLabel {
+  font-size: 10px;
+  font-style: italic;
+  margin-top: 4px;
+}
