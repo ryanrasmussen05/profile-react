@@ -49,7 +49,7 @@ function FlightTrackerPage() {
         <FlightDetails flight={selectedFlight} />
       </Drawer>
       <GoogleMapReact
-        bootstrapURLKeys={{ key: 'AIzaSyDLnN6_nWqUCJhgZKTuL9SNMCjUMfm65v4' }}
+        bootstrapURLKeys={{ key: '${API_KEY}' }}
         defaultCenter={{ lat: 41.3015, lng: -95.8945 }}
         defaultZoom={6}
       >
