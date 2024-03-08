@@ -77,3 +77,16 @@
   font-style: italic;
   margin-top: 4px;
 }
+
+.imageLoading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-style: italic;
+  font-size: 10px;
+}
+
+.image {
+  width: 100%;
+}
