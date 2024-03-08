@@ -1,4 +1,7 @@
 .button {
+  position: relative;
+  left: -16px;
+  top: -16px;
   display: flex;
   background-color: transparent;
   border: none;
