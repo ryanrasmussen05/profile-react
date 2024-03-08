@@ -1,6 +1,8 @@
+import { useEffect, useRef, useState } from 'react';
 import { Flight } from './airLabsUtils';
 import styles from './FlightDetails.module.css';
 import classNames from 'classnames';
+import { fetchAircraftPhoto } from './aircraftPhotoUtils';
 
 function Details({ text, label }: { text: string | number; label: string }) {
   return (
@@ -12,6 +14,42 @@ function Details({ text, label }: { text: string | number; label: string }) {
 }
 
 function FlightDetails({ flight }: { flight: Flight | null }) {
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const [aircraftPhotoURL, setAircraftPhotoURL] = useState<string | null>(null);
+
+  const imageCache = useRef(new Map<string, string>());
+
+  useEffect(() => {
+    // clear photo when flight changes
+    setAircraftPhotoURL(null);
+
+    async function fetchPhoto() {
+      if (!flight || !flight.tailNumber) {
+        setAircraftPhotoURL(null);
+        return;
+      }
+
+      // check cache
+      if (imageCache.current.has(flight.tailNumber)) {
+        const cachedURL = imageCache.current.get(flight.tailNumber) as string;
+        setAircraftPhotoURL(cachedURL);
+        return;
+      }
+
+      setIsImageLoading(true);
+      const photosData = await fetchAircraftPhoto(flight.tailNumber);
+      setIsImageLoading(false);
+
+      if (photosData.error) {
+        console.error(photosData.error);
+      } else {
+        imageCache.current.set(flight.tailNumber, photosData.url);
+        setAircraftPhotoURL(photosData.url);
+      }
+    }
+    fetchPhoto();
+  }, [flight]);
+
   if (!flight) {
     return <></>;
   }
@@ -19,53 +57,47 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
   const flightNumber = flight.flightNumber && flight.airline ? `${flight.airline}${flight.flightNumber}` : null;
 
   return (
-    <div className={styles.gridContainer}>
-      {flightNumber && (
-        <div className={classNames(styles.flightNumberCell, styles.gridCell)}>
-          <Details text={flightNumber} label="Flight Number" />
+    <>
+      {isImageLoading && <div className={styles.imageLoading}>Loading Image...</div>}
+      {aircraftPhotoURL && <img className={styles.image} src={aircraftPhotoURL} />}
+      <div className={styles.gridContainer}>
+        {flightNumber && (
+          <div className={classNames(styles.flightNumberCell, styles.gridCell)}>
+            <Details text={flightNumber} label="Flight Number" />
+          </div>
+        )}
+        {flight.tailNumber && (
+          <div className={classNames(styles.tailNumberCell, styles.gridCell)}>
+            <Details text={flight.tailNumber} label="Tail Number" />
+          </div>
+        )}
+        <div className={classNames(styles.aircraftCell, styles.gridCell)}>
+          <Details text={flight.aircraft} label="Aircraft" />
         </div>
-      )}
-      {flight.tailNumber && (
-        <div className={classNames(styles.tailNumberCell, styles.gridCell)}>
-          <Details text={flight.tailNumber} label="Tail Number" />
+        <div className={classNames(styles.latitudeCell, styles.gridCell)}>
+          <Details text={flight.latitude} label="Latitude" />
         </div>
-      )}
-      <div className={classNames(styles.aircraftCell, styles.gridCell)}>
-        <Details text={flight.aircraft} label="Aircraft" />
+        <div className={classNames(styles.longitudeCell, styles.gridCell)}>
+          <Details text={flight.longitude} label="Longitude" />
+        </div>
+        <div className={classNames(styles.headingCell, styles.gridCell)}>
+          <Details text={flight.heading} label="Heading" />
+        </div>
+        <div className={classNames(styles.altitudeCell, styles.gridCell)}>
+          <Details text={`${flight.altitude.toLocaleString()} ft`} label="Altitude" />
+        </div>
+        <div className={classNames(styles.speedCell, styles.gridCell)}>
+          <Details text={`${flight.speed} mph`} label="Speed" />
+        </div>
+        <div className={classNames(styles.originCell, styles.gridCell)}>
+          <Details text={flight.departureAirport ?? '???'} label="Origin" />
+        </div>
+        <div className={classNames(styles.destinationCell, styles.gridCell)}>
+          <Details text={flight.destinationAirport ?? '???'} label="Destination" />
+        </div>
       </div>
-      <div className={classNames(styles.latitudeCell, styles.gridCell)}>
-        <Details text={flight.latitude} label="Latitude" />
-      </div>
-      <div className={classNames(styles.longitudeCell, styles.gridCell)}>
-        <Details text={flight.longitude} label="Longitude" />
-      </div>
-      <div className={classNames(styles.headingCell, styles.gridCell)}>
-        <Details text={flight.heading} label="Heading" />
-      </div>
-      <div className={classNames(styles.altitudeCell, styles.gridCell)}>
-        <Details text={`${flight.altitude.toLocaleString()} ft`} label="Altitude" />
-      </div>
-      <div className={classNames(styles.speedCell, styles.gridCell)}>
-        <Details text={`${flight.speed} mph`} label="Speed" />
-      </div>
-      <div className={classNames(styles.originCell, styles.gridCell)}>
-        <Details text={flight.departureAirport ?? '???'} label="Origin" />
-      </div>
-      <div className={classNames(styles.destinationCell, styles.gridCell)}>
-        <Details text={flight.destinationAirport ?? '???'} label="Destination" />
-      </div>
-    </div>
+    </>
   );
 }
 
 export default FlightDetails;
-
-// picture?
-// flight number (if available)
-// tail number
-// aircraft
-// lat long
-// heading
-// altitude
-// speed
-// departure destination
