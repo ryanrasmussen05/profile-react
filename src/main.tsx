@@ -14,6 +14,12 @@ root.render(
       <ConfigProvider
         theme={{
           algorithm: theme.darkAlgorithm,
+          components: {
+            Spin: {
+              colorPrimary: '#FFFFFF',
+              algorithm: true,
+            },
+          },
         }}
       >
         <App />
