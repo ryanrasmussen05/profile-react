@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "outDir": "lib",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2017",
+    "module": "node16",
+		"moduleResolution": "node16",
+  },
+  "compileOnSave": true,
+  "include": [
+    "src"
+  ]
+}
