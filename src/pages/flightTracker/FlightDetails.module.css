@@ -87,6 +87,23 @@
   font-size: 10px;
 }
 
+.imageLoadingText {
+  margin-left: 10px;
+}
+
 .image {
   width: 100%;
+}
+
+.imageNotFound {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-style: italic;
+  font-size: 10px;
+}
+
+.imageNotFoundText {
+  margin-left: 6px;
 }
