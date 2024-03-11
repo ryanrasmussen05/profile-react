@@ -3,6 +3,8 @@ import { Flight } from './airLabsUtils';
 import styles from './FlightDetails.module.css';
 import classNames from 'classnames';
 import { fetchAircraftPhoto } from './aircraftPhotoUtils';
+import { Spin } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 function Details({ text, label }: { text: string | number; label: string }) {
   return (
@@ -13,8 +15,21 @@ function Details({ text, label }: { text: string | number; label: string }) {
   );
 }
 
+function AircraftPhoto({ photoURL }: { photoURL: string }) {
+  if (photoURL === 'not found') {
+    return (
+      <div className={styles.imageNotFound}>
+        <ExclamationCircleOutlined />
+        <span className={styles.imageNotFoundText}>Aircraft photo not available</span>
+      </div>
+    );
+  }
+
+  return <img className={styles.image} src={photoURL} alt="Aircarft photo" />;
+}
+
 function FlightDetails({ flight }: { flight: Flight | null }) {
-  const [isImageLoading, setIsImageLoading] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(true);
   const [aircraftPhotoURL, setAircraftPhotoURL] = useState<string | null>(null);
 
   const imageCache = useRef(new Map<string, string>());
@@ -41,7 +56,9 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
       setIsImageLoading(false);
 
       if (photosData.error) {
-        console.error(photosData.error);
+        console.log('Image not found for tail number:', flight.tailNumber);
+        imageCache.current.set(flight.tailNumber, 'not found');
+        setAircraftPhotoURL('not found');
       } else {
         imageCache.current.set(flight.tailNumber, photosData.url);
         setAircraftPhotoURL(photosData.url);
@@ -58,8 +75,13 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
 
   return (
     <>
-      {isImageLoading && <div className={styles.imageLoading}>Loading Image...</div>}
-      {aircraftPhotoURL && <img className={styles.image} src={aircraftPhotoURL} />}
+      {isImageLoading && (
+        <div className={styles.imageLoading}>
+          <Spin size="small" />
+          <span className={styles.imageLoadingText}>Finding photo</span>
+        </div>
+      )}
+      {aircraftPhotoURL && <AircraftPhoto photoURL={aircraftPhotoURL} />}
       <div className={styles.gridContainer}>
         {flightNumber && (
           <div className={classNames(styles.flightNumberCell, styles.gridCell)}>
