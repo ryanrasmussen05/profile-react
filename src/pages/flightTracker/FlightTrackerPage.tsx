@@ -3,10 +3,11 @@ import styles from './FlightTrackerPage.module.css';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Flight, fetchFlightData } from './airLabsUtils';
+import { fetchFlightData } from './airLabsUtils';
 import GoogleMapReact from 'google-map-react';
 import FlightMarker from './FlightMarker';
 import FlightDetails from './FlightDetails';
+import { Flight } from './types';
 
 function FlightTrackerPage() {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ function FlightTrackerPage() {
         <FlightDetails flight={selectedFlight} />
       </Drawer>
       <GoogleMapReact
-        bootstrapURLKeys={{ key: '${API_KEY}' }}
+        bootstrapURLKeys={{ key: '$API_KEY' }}
         defaultCenter={{ lat: 41.3015, lng: -95.8945 }}
         defaultZoom={6}
       >
