@@ -13,6 +13,7 @@ export interface Flight {
   tailNumber?: string;
   departureAirportDetails?: FlightAwareAirport;
   destinationAirportDetails?: FlightAwareAirport;
+  waypoints?: number[];
 }
 
 export interface FlightAwareFlight {
