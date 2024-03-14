@@ -9,10 +9,43 @@
   overflow: hidden;
 }
 
-.backButton {
+.buttonWrapper {
   position: absolute;
   top: 0;
   left: 0;
   margin: 8px;
   z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+.dataSourceWrapper {
+  background-color: #141414;
+  padding: 4px 10px;
+  border-radius: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.dataSourceLabel {
+  color: white;
+  font-size: 14px;
+  margin-right: 6px;
+  font-weight: bold;
+}
+
+.helpSectionHeader {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.helpSectionText {
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+
+.disclaimerText {
+  font-size: 12px;
+  font-style: italic;
 }
