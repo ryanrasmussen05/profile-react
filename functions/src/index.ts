@@ -79,3 +79,20 @@ export const flightAwareOmahaFlights = onRequest({ cors: true }, async (_request
     response.status(500).send({ error: 'internal error' });
   }
 });
+
+export const flightAwareFlightTrack = onRequest({ cors: true }, async (request, response) => {
+  try {
+    const url = new URL(`${FLIGHT_AWARE_BASE_URL}/flights/${request.query.flightId}/track`);
+
+    const apiResponse = await fetch(url.toString(), {
+      headers: {
+        'x-apikey': FLIGHT_AWARE_API_KEY,
+      },
+    });
+    const data = await apiResponse.json();
+    response.send(data);
+  } catch (err) {
+    console.error(err);
+    response.status(500).send({ error: 'internal error' });
+  }
+});
