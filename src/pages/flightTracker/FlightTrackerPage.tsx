@@ -4,7 +4,7 @@ import { ArrowLeftOutlined, QuestionOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { fetchFlightData as fetchAirLabsFlightData } from './airLabsUtils';
-import { fetchFlightData as fetchFlightAwareFlightData } from './flightAwareUtils';
+import { fetchFlightData as fetchFlightAwareFlightData, fetchFlightTrack } from './flightAwareUtils';
 import GoogleMapReact from 'google-map-react';
 import FlightMarker from './FlightMarker';
 import FlightDetails from './FlightDetails';
@@ -25,6 +25,7 @@ function FlightTrackerPage() {
   const mapsRef = useRef<any>(null);
   const mapRef = useRef<any>(null);
   const activeWaypointsPath = useRef<any>(null);
+  const activeTrackPath = useRef<any>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [dataSource, setDataSource] = useState<DataSource>(DataSource.AIRLABS);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,6 +46,10 @@ function FlightTrackerPage() {
     if (activeWaypointsPath.current) {
       activeWaypointsPath.current.setMap(null);
       activeWaypointsPath.current = null;
+    }
+    if (activeTrackPath.current) {
+      activeTrackPath.current.setMap(null);
+      activeTrackPath.current = null;
     }
 
     async function fetchFlights() {
@@ -77,7 +82,31 @@ function FlightTrackerPage() {
       activeWaypointsPath.current.setMap(null);
       activeWaypointsPath.current = null;
     }
+    if (activeTrackPath.current) {
+      activeTrackPath.current.setMap(null);
+      activeTrackPath.current = null;
+    }
 
+    // set actual path
+    fetchFlightTrack(flight).then((flightWithTrack) => {
+      if (flightWithTrack.track) {
+        const track = flightWithTrack.track;
+        const trackCoordinates = track.positions.map((position) => ({
+          lat: position.latitude,
+          lng: position.longitude,
+        }));
+        const trackPath = new mapsRef.current.Polyline({
+          path: trackCoordinates,
+          strokeColor: '#ff0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+        });
+        trackPath.setMap(mapRef.current);
+        activeTrackPath.current = trackPath;
+      }
+    });
+
+    // set planned path
     if (!flight.waypoints || flight.waypoints.length < 2) {
       return;
     }
@@ -139,7 +168,7 @@ function FlightTrackerPage() {
         <FlightDetails flight={selectedFlight} />
       </Drawer>
       <GoogleMapReact
-        bootstrapURLKeys={{ key: '$API_KEY' }}
+        bootstrapURLKeys={{ key: 'AIzaSyDLnN6_nWqUCJhgZKTuL9SNMCjUMfm65v4' }}
         defaultCenter={{ lat: 41.3015, lng: -95.8945 }}
         defaultZoom={6}
         onGoogleApiLoaded={({ maps, map }) => {
@@ -159,11 +188,13 @@ function FlightTrackerPage() {
           />
         ))}
       </GoogleMapReact>
-      {activeWaypointsPath.current && (
+      {(activeWaypointsPath.current || activeTrackPath.current) && (
         <div className={styles.legendContainer}>
           <div className={styles.legend}>
             <span className={styles.legendPlannedIcon}></span>
             <span className={styles.legendLabel}>Planned Path</span>
+            <span className={styles.legendTrackIcon}></span>
+            <span className={styles.legendLabel}>Actual Path</span>
           </div>
         </div>
       )}
