@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Flight } from './airLabsUtils';
 import styles from './FlightDetails.module.css';
 import classNames from 'classnames';
 import { fetchAircraftPhoto } from './aircraftPhotoUtils';
-import { Spin } from 'antd';
+import { Popover, Spin } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Flight, FlightAwareAirport } from './types';
 
 function Details({ text, label }: { text: string | number; label: string }) {
   return (
@@ -24,8 +24,39 @@ function AircraftPhoto({ photoURL }: { photoURL: string }) {
       </div>
     );
   }
-
   return <img className={styles.image} src={photoURL} alt="Aircarft photo" />;
+}
+
+function AirportDetails({
+  label,
+  name,
+  airportDetails,
+}: {
+  label: string;
+  name: string;
+  airportDetails?: FlightAwareAirport;
+}) {
+  if (!airportDetails) {
+    return <Details text={name ?? '???'} label={label} />;
+  }
+
+  const popupContent = (
+    <div className={styles.airportDetails}>
+      <span className={styles.airportDetailsName}>{airportDetails.name}</span>
+      <span className={styles.airportDetailsCity}>{airportDetails.city}</span>
+    </div>
+  );
+
+  return (
+    <div className={styles.details}>
+      <div>
+        <Popover content={popupContent} trigger="click">
+          <span className={styles.moreDetailsText}>{name}</span>
+        </Popover>
+      </div>
+      <span className={styles.detailsLabel}>{label}</span>
+    </div>
+  );
 }
 
 function FlightDetails({ flight }: { flight: Flight | null }) {
@@ -71,8 +102,6 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
     return <></>;
   }
 
-  const flightNumber = flight.flightNumber && flight.airline ? `${flight.airline}${flight.flightNumber}` : null;
-
   return (
     <>
       {isImageLoading && (
@@ -83,9 +112,9 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
       )}
       {aircraftPhotoURL && <AircraftPhoto photoURL={aircraftPhotoURL} />}
       <div className={styles.gridContainer}>
-        {flightNumber && (
+        {flight.flightNumber && (
           <div className={classNames(styles.flightNumberCell, styles.gridCell)}>
-            <Details text={flightNumber} label="Flight Number" />
+            <Details text={flight.flightNumber} label="Flight Number" />
           </div>
         )}
         {flight.tailNumber && (
@@ -103,7 +132,7 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
           <Details text={flight.longitude} label="Longitude" />
         </div>
         <div className={classNames(styles.headingCell, styles.gridCell)}>
-          <Details text={flight.heading} label="Heading" />
+          <Details text={flight.heading ?? '???'} label="Heading" />
         </div>
         <div className={classNames(styles.altitudeCell, styles.gridCell)}>
           <Details text={`${flight.altitude.toLocaleString()} ft`} label="Altitude" />
@@ -112,10 +141,18 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
           <Details text={`${flight.speed} mph`} label="Speed" />
         </div>
         <div className={classNames(styles.originCell, styles.gridCell)}>
-          <Details text={flight.departureAirport ?? '???'} label="Origin" />
+          <AirportDetails
+            label="Origin"
+            name={flight.departureAirport ?? '???'}
+            airportDetails={flight.departureAirportDetails}
+          />
         </div>
         <div className={classNames(styles.destinationCell, styles.gridCell)}>
-          <Details text={flight.destinationAirport ?? '???'} label="Destination" />
+          <AirportDetails
+            label="Destination"
+            name={flight.destinationAirport ?? '???'}
+            airportDetails={flight.destinationAirportDetails}
+          />
         </div>
       </div>
     </>
