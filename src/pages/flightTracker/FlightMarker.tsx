@@ -1,7 +1,7 @@
 import AirplaneSVG from './AirplaneSVG';
-import { Flight } from './airLabsUtils';
 import styles from './FlightMarker.module.css';
 import classNames from 'classnames';
+import { Flight } from './types';
 
 function FlightMarker({
   flight,
@@ -19,7 +19,7 @@ function FlightMarker({
       className={classNames({ [`${styles.button}`]: true, [`${styles.selected}`]: selected })}
       onClick={() => onClick(flight)}
     >
-      <AirplaneSVG rotation={flight.heading} />
+      <AirplaneSVG rotation={flight.heading ?? undefined} />
     </button>
   );
 }
