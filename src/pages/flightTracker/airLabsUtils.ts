@@ -77,6 +77,9 @@ function parseAndFilterFlights(flights: any[]) {
 }
 
 function toFlight(flightArray: any): Flight {
+  const flightNumber = flightArray[6];
+  const flightAirline = flightArray[8];
+
   return {
     latitude: flightArray[0],
     longitude: flightArray[1],
@@ -84,7 +87,7 @@ function toFlight(flightArray: any): Flight {
     heading: flightArray[3],
     speed: Math.floor((flightArray[4] || 0) * 0.621371), // kph to mph
     status: flightArray[5],
-    flightNumber: flightArray[6],
+    flightNumber: flightNumber && flightAirline ? `${flightAirline}${flightNumber}` : undefined,
     aircraft: flightArray[7],
     airline: flightArray[8],
     departureAirport: flightArray[9],
