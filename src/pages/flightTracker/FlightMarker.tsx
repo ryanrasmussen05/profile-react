@@ -9,7 +9,7 @@ function FlightMarker({
   selected,
 }: {
   flight: Flight;
-  onClick: (flight: Flight) => void;
+  onClick: (flight: Flight, event: any) => void;
   selected: boolean;
   lat?: number;
   lng?: number;
@@ -17,7 +17,7 @@ function FlightMarker({
   return (
     <button
       className={classNames({ [`${styles.button}`]: true, [`${styles.selected}`]: selected })}
-      onClick={() => onClick(flight)}
+      onClick={(event) => onClick(flight, event)}
     >
       <AirplaneSVG rotation={flight.heading ?? undefined} />
     </button>
