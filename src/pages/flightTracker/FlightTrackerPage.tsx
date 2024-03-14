@@ -26,7 +26,7 @@ function FlightTrackerPage() {
   const mapRef = useRef<any>(null);
   const activeWaypointsPath = useRef<any>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
-  const [dataSource, setDataSource] = useState<DataSource>(DataSource.FLIGHTAWARE);
+  const [dataSource, setDataSource] = useState<DataSource>(DataSource.AIRLABS);
   const [isLoading, setIsLoading] = useState(false);
   const [flights, setFlights] = useState<Flight[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -139,7 +139,7 @@ function FlightTrackerPage() {
         <FlightDetails flight={selectedFlight} />
       </Drawer>
       <GoogleMapReact
-        bootstrapURLKeys={{ key: 'AIzaSyDLnN6_nWqUCJhgZKTuL9SNMCjUMfm65v4' }}
+        bootstrapURLKeys={{ key: '$API_KEY' }}
         defaultCenter={{ lat: 41.3015, lng: -95.8945 }}
         defaultZoom={6}
         onGoogleApiLoaded={({ maps, map }) => {
