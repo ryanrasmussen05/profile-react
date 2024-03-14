@@ -123,7 +123,7 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
           </div>
         )}
         <div className={classNames(styles.aircraftCell, styles.gridCell)}>
-          <Details text={flight.aircraft} label="Aircraft" />
+          <Details text={flight.aircraft ?? '???'} label="Aircraft" />
         </div>
         <div className={classNames(styles.latitudeCell, styles.gridCell)}>
           <Details text={flight.latitude} label="Latitude" />
