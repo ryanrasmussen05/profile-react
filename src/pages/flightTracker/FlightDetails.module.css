@@ -78,6 +78,28 @@
   margin-top: 4px;
 }
 
+.moreDetailsText {
+  font-size: 18px;
+  font-weight: bold;
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+
+.airportDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.airportDetailsName {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.airportDetailsCity {
+  font-size: 12px;
+  font-weight: normal;
+}
+
 .imageLoading {
   display: flex;
   justify-content: center;
