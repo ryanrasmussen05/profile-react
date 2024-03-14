@@ -77,6 +77,15 @@
   margin-right: 5px;
 }
 
+.legendTrackIcon {
+  width: 20px;
+  height: 2px;
+  background-color: #ff0000;
+  display: inline-block;
+  margin-left: 10px;
+  margin-right: 5px;
+}
+
 .legendLabel {
   color: black;
   font-size: 12px;
