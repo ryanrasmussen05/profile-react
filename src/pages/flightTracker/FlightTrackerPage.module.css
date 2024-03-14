@@ -49,3 +49,36 @@
   font-size: 12px;
   font-style: italic;
 }
+
+.legendContainer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.legendPlannedIcon {
+  width: 20px;
+  height: 4px;
+  background-color: #315b7d;
+  opacity: 0.5;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.legendLabel {
+  color: black;
+  font-size: 12px;
+  font-weight: 500;
+}
