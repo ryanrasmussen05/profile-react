@@ -6,7 +6,7 @@ export interface Flight {
   speed: number; // mph
   status?: string;
   flightNumber?: string;
-  aircraft: string;
+  aircraft: string | null;
   airline?: string | null;
   departureAirport?: string | null;
   destinationAirport?: string | null;
@@ -26,7 +26,7 @@ export interface FlightAwareFlight {
   destination: FlightAwareAirport | null;
   first_position_time: string | null;
   last_position: FlightAwareFlightPosition;
-  aircraft_type: string;
+  aircraft_type: string | null;
   actual_off: string | null;
   actual_on: string | null;
   foresight_predictions_available: boolean;
