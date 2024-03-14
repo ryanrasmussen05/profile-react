@@ -25,6 +25,7 @@ function toFlight(flightAwareFlight: FlightAwareFlight): Flight {
     destinationAirport: flightAwareFlight.destination?.code_iata || flightAwareFlight.destination?.code_icao,
     destinationAirportDetails: flightAwareFlight.destination ?? undefined,
     tailNumber: flightAwareFlight.registration ?? undefined,
+    waypoints: flightAwareFlight.waypoints,
   };
 }
 
