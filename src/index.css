@@ -30,3 +30,12 @@ a {
     font-size: 12px;
   }
 }
+
+.ant-popover {
+  border: 1px solid white;
+  border-radius: 5px;
+}
+
+.ant-popover-arrow::after {
+  border: 1px solid white;
+}
