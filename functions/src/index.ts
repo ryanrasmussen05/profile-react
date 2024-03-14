@@ -39,7 +39,41 @@ export const flightAwareOmahaFlights = onRequest({ cors: true }, async (_request
       },
     });
     const data = await apiResponse.json();
-    response.send(data);
+    const flights = data.flights;
+
+    const regNumberPromises: Promise<any>[] = [];
+
+    flights.forEach((flight: any) => {
+      if (flight.ident_icao || flight.ident_iata) {
+        // this is a commercial flight and need to fetch reg separately
+        flight.flightNumber = flight.ident;
+        const identUrl = new URL(`${FLIGHT_AWARE_BASE_URL}/flights/${flight.fa_flight_id}`);
+        regNumberPromises.push(
+          fetch(identUrl.toString(), {
+            headers: {
+              'x-apikey': FLIGHT_AWARE_API_KEY,
+            },
+          })
+        );
+      } else {
+        flight.registration = flight.ident;
+        flight.flightNumber = null;
+      }
+    });
+
+    const identResponses = await Promise.all(regNumberPromises);
+
+    // set registration number for each commercial flight
+    await Promise.all(
+      identResponses.map(async (identResponse) => {
+        const identData = await identResponse.json();
+        const identFlight = identData.flights[0];
+        const flight = flights.find((f: any) => f.fa_flight_id === identFlight.fa_flight_id);
+        flight.registration = identFlight.registration;
+      })
+    );
+
+    response.send(flights);
   } catch (err) {
     console.error(err);
     response.status(500).send({ error: 'internal error' });
