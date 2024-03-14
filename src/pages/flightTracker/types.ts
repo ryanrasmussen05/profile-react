@@ -14,6 +14,8 @@ export interface Flight {
   departureAirportDetails?: FlightAwareAirport;
   destinationAirportDetails?: FlightAwareAirport;
   waypoints?: number[];
+  flightAwareId?: string;
+  track?: FlightAwareFlightTrack;
 }
 
 export interface FlightAwareFlight {
@@ -65,4 +67,8 @@ export interface FlightAwareFlightPosition {
   timestamp: string;
   altitude_change: string | null;
   update_type: string | null;
+}
+
+export interface FlightAwareFlightTrack {
+  positions: FlightAwareFlightPosition[];
 }
