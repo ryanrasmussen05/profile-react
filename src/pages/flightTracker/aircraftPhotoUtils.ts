@@ -12,5 +12,10 @@ export async function fetchAircraftPhoto(tailNumber: string): Promise<AircraftPh
   const response = await fetch(url.toString());
   const data = await response.json();
 
+  if (!response.ok) {
+    if (response.status === 404) throw new Error('Image not found');
+    else throw new Error('Failed to fetch image');
+  }
+
   return data as AircraftPhoto;
 }
