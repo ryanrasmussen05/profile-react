@@ -22,7 +22,7 @@ export const aircraftImage = onRequest({ cors: true }, async (request, response)
     response.send({ url: photoLink });
   } catch (err) {
     console.log(err);
-    response.send({ error: 'Error fetching data' });
+    response.status(404).send({ error: 'Error fetching data' });
   }
 });
 
