@@ -8,6 +8,11 @@ export async function fetchFlightData(): Promise<Flight[]> {
   const response = await fetch(url.toString());
   const data: FlightAwareFlight[] = await response.json();
 
+  if (!response.ok) {
+    // TODO add error specific for quota exceeded
+    throw new Error('Failed while finding FlightAware flights - flightAwareUtils');
+  }
+
   return data.map(toFlight);
 }
 
@@ -19,6 +24,11 @@ export async function fetchFlightTrack(flight: Flight): Promise<Flight> {
   url.searchParams.set('flightId', flight.flightAwareId);
   const response = await fetch(url.toString());
   const track = (await response.json()) as FlightAwareFlightTrack;
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch flight track - flightAwareUtils');
+  }
+
   flight.track = track;
   return flight;
 }
