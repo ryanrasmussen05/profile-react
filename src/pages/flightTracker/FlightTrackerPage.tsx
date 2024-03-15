@@ -1,4 +1,4 @@
-import { Button, Drawer, Modal, Select } from 'antd';
+import { Button, Drawer, Modal, Select, notification } from 'antd';
 import styles from './FlightTrackerPage.module.css';
 import { ArrowLeftOutlined, QuestionOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +22,7 @@ interface FlightDataCacheItem {
 
 function FlightTrackerPage() {
   const navigate = useNavigate();
+  const [notificationApi, notificationContextHolder] = notification.useNotification();
   const mapsRef = useRef<any>(null);
   const mapRef = useRef<any>(null);
   const activeWaypointsPath = useRef<any>(null);
@@ -58,19 +59,29 @@ function FlightTrackerPage() {
         return;
       }
       setIsLoading(true);
-      if (dataSource === DataSource.AIRLABS) {
-        const flightData = await fetchAirLabsFlightData(true, true);
-        flightDataCache.current[dataSource] = { timestamp: Date.now(), data: flightData };
-        setFlights(flightData);
-      } else if (dataSource === DataSource.FLIGHTAWARE) {
-        const flightData = await fetchFlightAwareFlightData();
-        flightDataCache.current[dataSource] = { timestamp: Date.now(), data: flightData };
-        setFlights(flightData);
+      try {
+        if (dataSource === DataSource.AIRLABS) {
+          const flightData = await fetchAirLabsFlightData(true, true);
+          flightDataCache.current[dataSource] = { timestamp: Date.now(), data: flightData };
+          setFlights(flightData);
+        } else if (dataSource === DataSource.FLIGHTAWARE) {
+          const flightData = await fetchFlightAwareFlightData();
+          flightDataCache.current[dataSource] = { timestamp: Date.now(), data: flightData };
+          setFlights(flightData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch flight data:', error);
+        notificationApi.error({
+          message: 'Error',
+          description: `Failed to fetch flights from ${dataSource}`,
+          duration: 4.5,
+          placement: 'bottomRight',
+        });
       }
       setIsLoading(false);
     }
     fetchFlights();
-  }, [dataSource]);
+  }, [dataSource, notificationApi]);
 
   const handleFlightClick = (flight: Flight, event: any) => {
     event.stopPropagation();
@@ -88,23 +99,33 @@ function FlightTrackerPage() {
     }
 
     // set actual path
-    fetchFlightTrack(flight).then((flightWithTrack) => {
-      if (flightWithTrack.track) {
-        const track = flightWithTrack.track;
-        const trackCoordinates = track.positions.map((position) => ({
-          lat: position.latitude,
-          lng: position.longitude,
-        }));
-        const trackPath = new mapsRef.current.Polyline({
-          path: trackCoordinates,
-          strokeColor: '#ff0000',
-          strokeOpacity: 1.0,
-          strokeWeight: 2,
+    fetchFlightTrack(flight)
+      .then((flightWithTrack) => {
+        if (flightWithTrack.track) {
+          const track = flightWithTrack.track;
+          const trackCoordinates = track.positions.map((position) => ({
+            lat: position.latitude,
+            lng: position.longitude,
+          }));
+          const trackPath = new mapsRef.current.Polyline({
+            path: trackCoordinates,
+            strokeColor: '#ff0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+          });
+          trackPath.setMap(mapRef.current);
+          activeTrackPath.current = trackPath;
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to fetch flight track:', error);
+        notificationApi.error({
+          message: 'Error',
+          description: 'Failed to load track',
+          duration: 3,
+          placement: 'bottomRight',
         });
-        trackPath.setMap(mapRef.current);
-        activeTrackPath.current = trackPath;
-      }
-    });
+      });
 
     // set planned path
     if (!flight.waypoints || flight.waypoints.length < 2) {
@@ -132,6 +153,7 @@ function FlightTrackerPage() {
 
   return (
     <div className={styles.page}>
+      {notificationContextHolder}
       <div className={styles.buttonWrapper}>
         <Button shape="circle" icon={<ArrowLeftOutlined />} onClick={() => navigate('/home')} />
         <div className={styles.dataSourceWrapper}>
