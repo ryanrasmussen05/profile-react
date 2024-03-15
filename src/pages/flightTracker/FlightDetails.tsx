@@ -83,17 +83,17 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
       }
 
       setIsImageLoading(true);
-      const photosData = await fetchAircraftPhoto(flight.tailNumber);
-      setIsImageLoading(false);
-
-      if (photosData.error) {
+      try {
+        const photosData = await fetchAircraftPhoto(flight.tailNumber);
+        imageCache.current.set(flight.tailNumber, photosData.url);
+        setAircraftPhotoURL(photosData.url);
+      } catch (error) {
+        console.error('Failed to fetch photo:', error);
         console.log('Image not found for tail number:', flight.tailNumber);
         imageCache.current.set(flight.tailNumber, 'not found');
         setAircraftPhotoURL('not found');
-      } else {
-        imageCache.current.set(flight.tailNumber, photosData.url);
-        setAircraftPhotoURL(photosData.url);
       }
+      setIsImageLoading(false);
     }
     fetchPhoto();
   }, [flight]);
