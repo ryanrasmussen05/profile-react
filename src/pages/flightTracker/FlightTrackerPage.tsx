@@ -56,6 +56,7 @@ function FlightTrackerPage() {
     async function fetchFlights() {
       if (flightDataCache.current[dataSource] && Date.now() - flightDataCache.current[dataSource]!.timestamp < 60000) {
         setFlights(flightDataCache.current[dataSource]!.data);
+        setMapPositionForDataSource(dataSource);
         return;
       }
       setIsLoading(true);
@@ -69,6 +70,7 @@ function FlightTrackerPage() {
           flightDataCache.current[dataSource] = { timestamp: Date.now(), data: flightData };
           setFlights(flightData);
         }
+        setMapPositionForDataSource(dataSource);
       } catch (error) {
         console.error('Failed to fetch flight data:', error);
         notificationApi.error({
@@ -149,6 +151,16 @@ function FlightTrackerPage() {
 
   const handleDrawerClose = () => {
     setIsDrawerOpen(false);
+  };
+
+  const setMapPositionForDataSource = (dataSource: DataSource) => {
+    if (dataSource === DataSource.AIRLABS) {
+      mapRef.current?.setCenter({ lat: 41.3015, lng: -95.8945 });
+      mapRef.current?.setZoom(6);
+    } else if (dataSource === DataSource.FLIGHTAWARE) {
+      mapRef.current?.setCenter({ lat: 41.2427, lng: -96.0445 });
+      mapRef.current?.setZoom(9);
+    }
   };
 
   return (
