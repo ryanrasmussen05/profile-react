@@ -1,11 +1,19 @@
 import got from 'got';
 import { onRequest } from 'firebase-functions/v2/https';
+import { initializeApp, applicationDefault } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 import { JSDOM } from 'jsdom';
 
 const JET_PHOTOS_URL = 'https://www.jetphotos.com';
 
 const FLIGHT_AWARE_API_KEY = '$API_KEY';
 const FLIGHT_AWARE_BASE_URL = 'https://aeroapi.flightaware.com/aeroapi';
+
+initializeApp({
+  credential: applicationDefault(),
+});
+
+const db = getFirestore();
 
 export const aircraftImage = onRequest({ cors: true }, async (request, response) => {
   try {
@@ -27,9 +35,20 @@ export const aircraftImage = onRequest({ cors: true }, async (request, response)
 });
 
 export const flightAwareOmahaFlights = onRequest({ cors: true }, async (_request, response) => {
+  // if next call will put us over $5, return error
+  try {
+    const currentCost = await getFlightAwareCurrentCost();
+    if (currentCost > 495) {
+      response.status(429).send({ error: 'cost exceeded' });
+      return;
+    }
+  } catch (err) {
+    console.error('error calculating current cost', err);
+  }
+
+  // search for omaha flights
   try {
     const queryString = '-latlong "40.999229 -96.388079 41.462593 -95.672571"';
-    //const queryString = '-latlong "40.722886 -96.835106 41.739411 -95.203278"';
     const url = new URL(`${FLIGHT_AWARE_BASE_URL}/flights/search`);
     url.searchParams.set('query', queryString);
 
@@ -73,6 +92,15 @@ export const flightAwareOmahaFlights = onRequest({ cors: true }, async (_request
       })
     );
 
+    // update cost for the search call and all ident calls
+    try {
+      // 5 cents for search, 0.5 cents for each ident call
+      const cost = 5 + 0.5 * regNumberPromises.length;
+      updateFlightAwareCurrentCost(cost);
+    } catch (err) {
+      console.error('error updating cost', err);
+    }
+
     response.send(flights);
   } catch (err) {
     console.error(err);
@@ -81,6 +109,25 @@ export const flightAwareOmahaFlights = onRequest({ cors: true }, async (_request
 });
 
 export const flightAwareFlightTrack = onRequest({ cors: true }, async (request, response) => {
+  // if next call will put us over $5, return empty (no need to error)
+  try {
+    const currentCost = await getFlightAwareCurrentCost();
+    if (currentCost > 498.8) {
+      response.send();
+      return;
+    }
+  } catch (err) {
+    console.error('error calculating current cost', err);
+  }
+
+  // update cost for the track call
+  try {
+    // 1.2 cents for each track call
+    updateFlightAwareCurrentCost(1.2);
+  } catch (err) {
+    console.error('error updating cost', err);
+  }
+
   try {
     const url = new URL(`${FLIGHT_AWARE_BASE_URL}/flights/${request.query.flightId}/track`);
 
@@ -96,3 +143,25 @@ export const flightAwareFlightTrack = onRequest({ cors: true }, async (request, 
     response.status(500).send({ error: 'internal error' });
   }
 });
+
+async function getFlightAwareCurrentCost() {
+  const currentDate = new Date();
+  const currentMonthString = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
+  const docRef = db.collection('flightAwareUsage').doc(currentMonthString);
+
+  const currentCostData = await docRef.get().then((doc) => doc.data());
+  return currentCostData?.runningCost || 0;
+}
+
+async function updateFlightAwareCurrentCost(costInCents: number) {
+  const currentDate = new Date();
+  const currentMonthString = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
+  const docRef = db.collection('flightAwareUsage').doc(currentMonthString);
+
+  const currentCostData = await docRef.get().then((doc) => doc.data());
+  const runningCost = currentCostData?.runningCost || 0;
+
+  await docRef.set({
+    runningCost: runningCost + costInCents,
+  });
+}
