@@ -9,7 +9,9 @@ export async function fetchFlightData(): Promise<Flight[]> {
   const data: FlightAwareFlight[] = await response.json();
 
   if (!response.ok) {
-    // TODO add error specific for quota exceeded
+    if (response.status === 429) {
+      throw new Error('Quota exceeded - flightAwareUtils');
+    }
     throw new Error('Failed while finding FlightAware flights - flightAwareUtils');
   }
 
