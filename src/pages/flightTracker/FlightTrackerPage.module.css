@@ -91,3 +91,13 @@
   font-size: 12px;
   font-weight: 500;
 }
+
+.cardContainer {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
