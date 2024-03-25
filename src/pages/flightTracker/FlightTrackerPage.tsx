@@ -8,12 +8,16 @@ import { fetchFlightData as fetchFlightAwareFlightData, fetchFlightTrack } from 
 import GoogleMapReact from 'google-map-react';
 import FlightMarker from './FlightMarker';
 import FlightDetails from './FlightDetails';
+import FlightDetailsCard from './FlightDetailsCard';
 import { Flight } from './types';
+import useScreenSize from '../../hooks/useScreenSize';
 
 enum DataSource {
   AIRLABS = 'airlabs',
   FLIGHTAWARE = 'flightaware',
 }
+
+const MOBILE_WIDTH_THRESHOLD = 768;
 
 interface FlightDataCacheItem {
   timestamp: number;
@@ -32,17 +36,22 @@ function FlightTrackerPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [flights, setFlights] = useState<Flight[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDetailsCardOpen, setIsDetailsCardOpen] = useState(false);
   const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
   const flightDataCache = useRef<Record<DataSource, FlightDataCacheItem | null>>({
     [DataSource.AIRLABS]: null,
     [DataSource.FLIGHTAWARE]: null,
   });
+  const { width: screenWidth } = useScreenSize();
+
+  const isMobile = screenWidth <= MOBILE_WIDTH_THRESHOLD;
 
   // data source change
   useEffect(() => {
     // clear any active selections
     setSelectedFlight(null);
     setIsDrawerOpen(false);
+    setIsDetailsCardOpen(false);
 
     if (activeWaypointsPath.current) {
       activeWaypointsPath.current.setMap(null);
@@ -94,10 +103,23 @@ function FlightTrackerPage() {
     fetchFlights();
   }, [dataSource, notificationApi]);
 
+  const handleOpenDetails = () => {
+    if (isMobile) {
+      setIsDetailsCardOpen(true);
+    } else {
+      setIsDrawerOpen(true);
+    }
+  };
+
+  const handleShowMoreDetails = () => {
+    setIsDetailsCardOpen(false);
+    setIsDrawerOpen(true);
+  };
+
   const handleFlightClick = (flight: Flight, event: any) => {
     event.stopPropagation();
     setSelectedFlight(flight);
-    setIsDrawerOpen(true);
+    handleOpenDetails();
 
     // clear any existing path
     if (activeWaypointsPath.current) {
@@ -239,6 +261,11 @@ function FlightTrackerPage() {
             <span className={styles.legendTrackIcon}></span>
             <span className={styles.legendLabel}>Actual Path</span>
           </div>
+        </div>
+      )}
+      {isDetailsCardOpen && (
+        <div className={styles.cardContainer}>
+          <FlightDetailsCard flight={selectedFlight} onDetailsClick={handleShowMoreDetails} />
         </div>
       )}
       <Modal title="Omaha Flight Tracker" open={isHelpOpen} onCancel={() => setIsHelpOpen(false)} footer={null}>
