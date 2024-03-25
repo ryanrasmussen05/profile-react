@@ -71,14 +71,23 @@ function FlightTrackerPage() {
           setFlights(flightData);
         }
         setMapPositionForDataSource(dataSource);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch flight data:', error);
-        notificationApi.error({
-          message: 'Error',
-          description: `Failed to fetch flights from ${dataSource}`,
-          duration: 4.5,
-          placement: 'bottomRight',
-        });
+        if (error.message === 'Quota exceeded - flightAwareUtils') {
+          notificationApi.error({
+            message: 'Error',
+            description: `FlightAware montly quota exceeded, please try again next month`,
+            duration: 10,
+            placement: 'bottomRight',
+          });
+        } else {
+          notificationApi.error({
+            message: 'Error',
+            description: `Failed to fetch flights from ${dataSource}`,
+            duration: 4.5,
+            placement: 'bottomRight',
+          });
+        }
       }
       setIsLoading(false);
     }
