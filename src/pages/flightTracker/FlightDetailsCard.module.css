@@ -1,0 +1,24 @@
+.details {
+  display: flex;
+}
+
+.detailsLabel {
+  font-weight: bold;
+}
+
+.detailsText {
+  margin-left: 6px;
+}
+
+.origin {
+  margin-right: 6px;
+}
+
+.destination {
+  margin-left: 6px;
+}
+
+.detailsButton {
+  margin-left: 40px;
+  font-weight: bold;
+}
