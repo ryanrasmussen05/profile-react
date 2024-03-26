@@ -37,6 +37,14 @@ export const airLabsFlights = onRequest({ cors: true, secrets: ['AIRLABS_API_KEY
   const outgoingFlights = (await airLabsResponse.json()) || [];
   flights.push(...outgoingFlights);
 
+  // update airlabs call count
+  try {
+    // 2 calls (incoming and outgoing) for each search
+    updateAirlabsCallCount(2);
+  } catch (err) {
+    console.error('error updating call count', err);
+  }
+
   response.send(flights);
 });
 
@@ -194,5 +202,18 @@ async function updateFlightAwareCurrentCost(costInCents: number) {
 
   await docRef.set({
     runningCost: runningCost + costInCents,
+  });
+}
+
+async function updateAirlabsCallCount(amount: number) {
+  const currentDate = new Date();
+  const currentMonthString = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
+  const docRef = db.collection('airLabsUsage').doc(currentMonthString);
+
+  const currentUsageData = await docRef.get().then((doc) => doc.data());
+  const callCount = currentUsageData?.callCount || 0;
+
+  await docRef.set({
+    callCount: callCount + amount,
   });
 }
