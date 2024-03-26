@@ -71,7 +71,7 @@ function FlightTrackerPage() {
       setIsLoading(true);
       try {
         if (dataSource === DataSource.AIRLABS) {
-          const flightData = await fetchAirLabsFlightData(true, true);
+          const flightData = await fetchAirLabsFlightData();
           flightDataCache.current[dataSource] = { timestamp: Date.now(), data: flightData };
           setFlights(flightData);
         } else if (dataSource === DataSource.FLIGHTAWARE) {
