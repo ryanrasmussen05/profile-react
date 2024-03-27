@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import styles from './HomePage.module.css';
 import JsonView from 'react18-json-view';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 
 const json = {
   name: 'Ryan Rasmussen',
@@ -37,21 +38,40 @@ const links = {
     {
       title: 'Courage From Above (iOS)',
       link: 'https://apps.apple.com/us/app/courage-from-above/id1366354886?app=itunes&ign-mpt=uo%3D4',
+      analyticsName: 'courage-from-above-ios',
     },
-    { title: 'Courage From Above (Android)', link: 'https://play.google.com/store/apps/details?id=com.sac.sac_ww2' },
-    { title: 'Sphero Labyrhinth', link: 'https://play.google.com/store/apps/details?id=com.rhino.sacsphero' },
-    { title: 'Foscam Control Center', link: 'https://play.google.com/store/apps/details?id=com.rhino.foscam' },
+    {
+      title: 'Courage From Above (Android)',
+      link: 'https://play.google.com/store/apps/details?id=com.sac.sac_ww2',
+      analyticsName: 'courage-from-above-android',
+    },
+    {
+      title: 'Sphero Labyrhinth',
+      link: 'https://play.google.com/store/apps/details?id=com.rhino.sacsphero',
+      analyticsName: 'sphero-labyrhinth',
+    },
+    {
+      title: 'Foscam Control Center',
+      link: 'https://play.google.com/store/apps/details?id=com.rhino.foscam',
+      analyticsName: 'foscam-control-center',
+    },
   ],
   sandbox: [
-    { title: 'Omaha Flight Tracker', path: '/flight-tracker' },
-    { title: 'Particles', path: '/particles' },
-    { title: 'Fireworks', path: '/fireworks' },
-    { title: 'Solar System', path: '/solar-system' },
-    { title: 'Monty Hall Paradox', path: '/monty-hall' },
+    { title: 'Omaha Flight Tracker', path: '/flight-tracker', analyticsName: 'flight-tracker' },
+    { title: 'Particles', path: '/particles', analyticsName: 'particles' },
+    { title: 'Fireworks', path: '/fireworks', analyticsName: 'fireworks' },
+    { title: 'Solar System', path: '/solar-system', analyticsName: 'solar-system' },
+    { title: 'Monty Hall Paradox', path: '/monty-hall', analyticsName: 'monty-hall' },
   ],
 };
 
 function HomePage() {
+  const analytics = getAnalytics();
+
+  const linkClick = (item: any) => {
+    logEvent(analytics, `link_click_${item.analyticsName}`);
+  };
+
   return (
     <>
       <h1 className={styles.header}>{`> Ryan Rasmussen`}</h1>
@@ -75,7 +95,9 @@ function HomePage() {
         <ul>
           {links.projects.map((project) => (
             <li key={project.title}>
-              <a href={project.link}>{project.title}</a>
+              <a href={project.link} target="_blank" onClick={() => linkClick(project)}>
+                {project.title}
+              </a>
             </li>
           ))}
         </ul>
@@ -84,7 +106,9 @@ function HomePage() {
         <ul>
           {links.sandbox.map((sandboxItem) => (
             <li key={sandboxItem.title}>
-              <Link to={sandboxItem.path}>{sandboxItem.title}</Link>
+              <Link to={sandboxItem.path} onClick={() => linkClick(sandboxItem)}>
+                {sandboxItem.title}
+              </Link>
             </li>
           ))}
         </ul>
