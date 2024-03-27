@@ -1,12 +1,22 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import HomePage from './pages/home/HomePage';
 import ParticlesPage from './pages/particles/ParticlesPage';
 import FireworksPage from './pages/fireworks/FireworksPage';
 import SolarSystemPage from './pages/solarSystem/SolarSystemPage';
 import MontyHallPage from './pages/montyHall/MontyHallPage';
 import FlightTrackerPage from './pages/flightTracker/FlightTrackerPage';
+import { useEffect } from 'react';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 
 export default function App() {
+  const analytics = getAnalytics();
+  const location = useLocation();
+
+  useEffect(() => {
+    const pageName = location.pathname.replace('/', '');
+    logEvent(analytics, `page_visit_${pageName}`);
+  }, [location, analytics]);
+
   return (
     <Routes>
       <Route path="/">
