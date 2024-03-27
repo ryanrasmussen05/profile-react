@@ -66,6 +66,8 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
   const imageCache = useRef(new Map<string, string>());
 
   useEffect(() => {
+    let isStillInContext = true; // this tracks if the flight is still in context, if not then we don't want to set the photo
+
     // clear photo when flight changes
     setAircraftPhotoURL(null);
 
@@ -86,16 +88,26 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
       try {
         const photosData = await fetchAircraftPhoto(flight.tailNumber);
         imageCache.current.set(flight.tailNumber, photosData.url);
-        setAircraftPhotoURL(photosData.url);
+        if (isStillInContext) {
+          setAircraftPhotoURL(photosData.url);
+          setIsImageLoading(false);
+        }
       } catch (error) {
         console.error('Failed to fetch photo:', error);
         console.log('Image not found for tail number:', flight.tailNumber);
         imageCache.current.set(flight.tailNumber, 'not found');
-        setAircraftPhotoURL('not found');
+        if (isStillInContext) {
+          setAircraftPhotoURL('not found');
+          setIsImageLoading(false);
+        }
       }
-      setIsImageLoading(false);
     }
     fetchPhoto();
+
+    return () => {
+      // if the flight changes, we want to cache the result but not set the photo
+      isStillInContext = false;
+    };
   }, [flight]);
 
   if (!flight) {
