@@ -14,6 +14,8 @@ initializeApp({
 
 const db = getFirestore();
 
+const aircraftImageCache: Record<string, string> = {};
+
 export const airLabsFlights = onRequest({ cors: true, secrets: ['AIRLABS_API_KEY'] }, async (_request, response) => {
   const url = new URL(AIR_LABS_BASE_URL);
   url.searchParams.set('api_key', process.env.AIRLABS_API_KEY as string);
@@ -49,6 +51,10 @@ export const airLabsFlights = onRequest({ cors: true, secrets: ['AIRLABS_API_KEY
 });
 
 export const aircraftImage = onRequest({ cors: true }, async (request, response) => {
+  if (aircraftImageCache[request.query.tailNumber as string]) {
+    response.send({ url: aircraftImageCache[request.query.tailNumber as string] });
+    return;
+  }
   try {
     const regPageHtml = await got(`${JET_PHOTOS_URL}/registration/${request.query.tailNumber}`);
     const dom = new JSDOM(regPageHtml.body);
@@ -60,6 +66,7 @@ export const aircraftImage = onRequest({ cors: true }, async (request, response)
     // @ts-expect-error element is an img
     let photoLink = photoDom.window.document.querySelectorAll('.large-photo__img')[1].src;
     photoLink = photoLink.replace('full', '400');
+    aircraftImageCache[request.query.tailNumber as string] = photoLink;
     response.send({ url: photoLink });
   } catch (err) {
     console.log(err);
