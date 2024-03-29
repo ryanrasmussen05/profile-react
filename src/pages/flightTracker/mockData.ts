@@ -342,7 +342,7 @@ export const flightAwareMockFlights: FlightAwareFlight[] = [
   },
 ];
 
-export const flightAwareMockTrack: FlightAwareFlightTrack = {
+const flightAwareMockTrack: FlightAwareFlightTrack = {
   positions: [
     {
       fa_flight_id: null,
@@ -2666,4 +2666,12 @@ export const flightAwareMockTrack: FlightAwareFlightTrack = {
       update_type: 'A',
     },
   ],
+};
+
+export const flightAwareMockTrackMap: Record<string, FlightAwareFlightTrack> = {
+  'N968SP-1710181912-sw-630p': flightAwareMockTrack,
+  'FDJ268-1710180127-sw-1516p': flightAwareMockTrack,
+  'UAL260-1709979517-fa-1368p': flightAwareMockTrack,
+  'AMF1612-1710192518-sw-512p': flightAwareMockTrack,
+  'AWI6084-1710016843-schedule-2413p': flightAwareMockTrack,
 };
