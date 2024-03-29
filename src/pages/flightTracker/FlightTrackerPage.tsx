@@ -4,7 +4,11 @@ import { ArrowLeftOutlined, QuestionOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { fetchFlightData as fetchAirLabsFlightData } from './airLabsUtils';
-import { fetchFlightData as fetchFlightAwareFlightData, fetchFlightTrack } from './flightAwareUtils';
+import {
+  fetchFlightData as fetchFlightAwareFlightData,
+  fetchFlightTrack,
+  fetchMockFlightData,
+} from './flightAwareUtils';
 import GoogleMapReact from 'google-map-react';
 import FlightMarker from './FlightMarker';
 import FlightDetails from './FlightDetails';
@@ -91,13 +95,16 @@ function FlightTrackerPage() {
         setMapPositionForDataSource(dataSource);
       } catch (error: any) {
         console.error('Failed to fetch flight data:', error);
+        // handle FA quota exceeded error (show mock data instead of error message)
         if (error.message === 'Quota exceeded - flightAwareUtils') {
-          notificationApi.error({
-            message: 'Error',
-            description: `FlightAware monthly quota exceeded, please try again next month`,
+          notificationApi.info({
+            message: 'Quota Exceeded',
+            description: `FlightAware monthly quota exceeded, please try again next month. Displaying mock data for now.`,
             duration: 10,
             placement: 'bottomRight',
           });
+          setFlights(fetchMockFlightData());
+          setMapPositionForDataSource(dataSource);
         } else {
           notificationApi.error({
             message: 'Error',
