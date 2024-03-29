@@ -1,3 +1,4 @@
+import { flightAwareMockFlights, flightAwareMockTrackMap } from './mockData';
 import { Flight, FlightAwareFlight, FlightAwareFlightTrack } from './types';
 
 const SEARCH_URL = 'https://flightawareomahaflights-7vj4jmsdna-uc.a.run.app';
@@ -33,6 +34,14 @@ export async function fetchFlightTrack(flight: Flight): Promise<Flight> {
 
   flight.track = track;
   return flight;
+}
+
+export function fetchMockFlightData(): Flight[] {
+  const flights = flightAwareMockFlights.map(toFlight);
+  flights.forEach((flight) => {
+    flight.track = flightAwareMockTrackMap[flight.flightAwareId as string];
+  });
+  return flights;
 }
 
 function toFlight(flightAwareFlight: FlightAwareFlight): Flight {
