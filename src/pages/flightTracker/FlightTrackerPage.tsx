@@ -1,4 +1,4 @@
-import { Button, Drawer, Modal, Select, notification } from 'antd';
+import { Button, Drawer, Modal, Select, message, notification } from 'antd';
 import styles from './FlightTrackerPage.module.css';
 import { ArrowLeftOutlined, QuestionOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -27,6 +27,7 @@ interface FlightDataCacheItem {
 function FlightTrackerPage() {
   const navigate = useNavigate();
   const [notificationApi, notificationContextHolder] = notification.useNotification();
+  const [messageApi, messageContextHolder] = message.useMessage({ top: '90%' as unknown as number });
   const mapsRef = useRef<any>(null);
   const mapRef = useRef<any>(null);
   const activeWaypointsPath = useRef<any>(null);
@@ -63,12 +64,20 @@ function FlightTrackerPage() {
     }
 
     async function fetchFlights() {
+      // use cached data if available and less than 1 minute old
       if (flightDataCache.current[dataSource] && Date.now() - flightDataCache.current[dataSource]!.timestamp < 60000) {
         setFlights(flightDataCache.current[dataSource]!.data);
         setMapPositionForDataSource(dataSource);
         return;
       }
+
+      // fetch new data
       setIsLoading(true);
+      messageApi.open({
+        type: 'loading',
+        content: 'Loading data...',
+        duration: 0,
+      });
       try {
         if (dataSource === DataSource.AIRLABS) {
           const flightData = await fetchAirLabsFlightData();
@@ -85,7 +94,7 @@ function FlightTrackerPage() {
         if (error.message === 'Quota exceeded - flightAwareUtils') {
           notificationApi.error({
             message: 'Error',
-            description: `FlightAware montly quota exceeded, please try again next month`,
+            description: `FlightAware monthly quota exceeded, please try again next month`,
             duration: 10,
             placement: 'bottomRight',
           });
@@ -98,10 +107,13 @@ function FlightTrackerPage() {
           });
         }
       }
+
+      // cleanup loading state
       setIsLoading(false);
+      messageApi.destroy();
     }
     fetchFlights();
-  }, [dataSource, notificationApi]);
+  }, [dataSource, notificationApi, messageApi]);
 
   const handleOpenDetails = () => {
     if (isMobile) {
@@ -197,6 +209,7 @@ function FlightTrackerPage() {
   return (
     <div className={styles.page}>
       {notificationContextHolder}
+      {messageContextHolder}
       <div className={styles.buttonWrapper}>
         <Button shape="circle" icon={<ArrowLeftOutlined />} onClick={() => navigate('/home')} />
         <div className={styles.dataSourceWrapper}>
@@ -206,7 +219,8 @@ function FlightTrackerPage() {
             disabled={isLoading}
             value={dataSource}
             onChange={(value) => setDataSource(value)}
-            style={{ width: 120 }}
+            style={{ width: 128 }}
+            size="large"
             options={[
               { value: DataSource.AIRLABS, label: 'AirLabs' },
               { value: DataSource.FLIGHTAWARE, label: 'FlightAware' },
@@ -236,6 +250,7 @@ function FlightTrackerPage() {
         bootstrapURLKeys={{ key: '$API_KEY' }}
         defaultCenter={{ lat: 41.3015, lng: -95.8945 }}
         defaultZoom={6}
+        options={{ fullscreenControl: false }}
         onGoogleApiLoaded={({ maps, map }) => {
           mapsRef.current = maps;
           mapRef.current = map;
