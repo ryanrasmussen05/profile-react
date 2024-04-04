@@ -60,7 +60,7 @@ function AirportDetails({
 }
 
 function FlightDetails({ flight }: { flight: Flight | null }) {
-  const [isImageLoading, setIsImageLoading] = useState(true);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const [aircraftPhotoURL, setAircraftPhotoURL] = useState<string | null>(null);
 
   const imageCache = useRef(new Map<string, string>());
@@ -70,6 +70,7 @@ function FlightDetails({ flight }: { flight: Flight | null }) {
 
     // clear photo when flight changes
     setAircraftPhotoURL(null);
+    setIsImageLoading(false);
 
     async function fetchPhoto() {
       if (!flight || !flight.tailNumber) {
