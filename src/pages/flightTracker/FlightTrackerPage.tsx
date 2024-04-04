@@ -51,6 +51,8 @@ function FlightTrackerPage() {
 
   const isMobile = screenWidth <= MOBILE_WIDTH_THRESHOLD;
 
+  const showTrackLegend = !!selectedFlight && dataSource === DataSource.FLIGHTAWARE;
+
   // data source change
   useEffect(() => {
     // clear any active selections
@@ -275,7 +277,7 @@ function FlightTrackerPage() {
           />
         ))}
       </GoogleMapReact>
-      {(activeWaypointsPath.current || activeTrackPath.current) && (
+      {showTrackLegend && (
         <div className={styles.legendContainer}>
           <div className={styles.legend}>
             <span className={styles.legendPlannedIcon}></span>
