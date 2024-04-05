@@ -53,9 +53,7 @@ function FlightTrackerPage() {
 
   const showTrackLegend = !!selectedFlight && dataSource === DataSource.FLIGHTAWARE;
 
-  // data source change
-  useEffect(() => {
-    // clear any active selections
+  const clearMapSelections = () => {
     setSelectedFlight(null);
     setIsDrawerOpen(false);
     setIsDetailsCardOpen(false);
@@ -68,6 +66,11 @@ function FlightTrackerPage() {
       activeTrackPath.current.setMap(null);
       activeTrackPath.current = null;
     }
+  };
+
+  // data source change
+  useEffect(() => {
+    clearMapSelections();
 
     async function fetchFlights() {
       // use cached data if available and less than 1 minute old
@@ -263,6 +266,7 @@ function FlightTrackerPage() {
         onGoogleApiLoaded={({ maps, map }) => {
           mapsRef.current = maps;
           mapRef.current = map;
+          map.addListener('click', clearMapSelections);
         }}
         yesIWantToUseGoogleMapApiInternals
       >
