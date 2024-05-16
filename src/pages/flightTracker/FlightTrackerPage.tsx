@@ -176,12 +176,21 @@ function FlightTrackerPage() {
       })
       .catch((error) => {
         console.error('Failed to fetch flight track:', error);
-        notificationApi.error({
-          message: 'Error',
-          description: 'Failed to load track',
-          duration: 3,
-          placement: 'bottomRight',
-        });
+        if (error.message === 'rate quota exceeded - flightAwareUtils') {
+          notificationApi.error({
+            message: 'Error',
+            description: 'Quota rate exceeded, please try again later',
+            duration: 3,
+            placement: 'bottomRight',
+          });
+        } else {
+          notificationApi.error({
+            message: 'Error',
+            description: 'Failed to load track',
+            duration: 3,
+            placement: 'bottomRight',
+          });
+        }
       });
 
     // set planned path
