@@ -31,6 +31,10 @@ export async function fetchFlightTrack(flight: Flight): Promise<Flight> {
   if (!response.ok) {
     throw new Error('Failed to fetch flight track - flightAwareUtils');
   }
+  //@ts-expect-error unique case where API returns different structure when quota exceeded
+  if (track.status === 429) {
+    throw new Error('rate quota exceeded - flightAwareUtils');
+  }
 
   flight.track = track;
   return flight;
