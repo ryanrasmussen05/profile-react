@@ -99,7 +99,7 @@ export const flightAwareOmahaFlights = onRequest(
         },
       });
       const data = await apiResponse.json();
-      const flights = data.flights;
+      const flights = data.flights || [];
 
       const regNumberPromises: Promise<any>[] = [];
 
